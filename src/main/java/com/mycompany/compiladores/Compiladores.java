@@ -38,7 +38,8 @@ public class Compiladores {
         System.out.println("Nome do arquivo: ");
         Scanner console = new Scanner(System.in);
         path = console.nextLine();
-        try ( BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"))) {
+        try {
+            BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"));
             String linha;
             identificador = "";
             char letra;
@@ -60,19 +61,23 @@ public class Compiladores {
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
-                    System.out.println(indice + "\t" + lex.toString()+"\n");
+                    System.out.println(indice + "\t" + lex.toString() + "\n");
                 } else {
-                    System.out.println("-\t" + lex.toString()+"\n");
+                    System.out.println("-\t" + lex.toString() + "\n");
                 }
             });
 
             simbolos.forEach(simba -> {
                 System.out.println(simba.toString());
                 System.out.println("=======================");
+
             });
+            arquivo_lexico(path);
+            arquivo_tab(path);
+        } catch (FileNotFoundException x) {
+            System.out.println("Arquivo não encontrado");
         }
-        arquivo_lexico(path);
-        arquivo_tab(path);
+        
     }
 
     public static Atomo truncador(Lexeme lexeme) {
@@ -154,7 +159,7 @@ public class Compiladores {
     }
 
     public static void carregar_reservados(String path) throws IOException {
-        try ( BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
             String linha;
             String aux[];
             Lexeme lex;
@@ -175,66 +180,66 @@ public class Compiladores {
     }
 
     public static void arquivo_lexico(String path) throws IOException {
-        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".LEX"))) {
-            String cabecalho = "*************************************************************\n"+
-                               "*\t EQUIPE 03                                    \n"+
-                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
-                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
-                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
-                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
-                               "*************************************************************\n"+
-                               "\n\n"+
-                               "=============================================================\n"+
-                               "INDICE\tCODIGO\t\tLEXEME\n"+
-                               "=============================================================\n";
+        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".LEX"))) {
+            String cabecalho = "*************************************************************\n"
+                    + "*\t EQUIPE 03                                    \n"
+                    + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
+                    + "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"
+                    + "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"
+                    + "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"
+                    + "*************************************************************\n"
+                    + "\n\n"
+                    + "=============================================================\n"
+                    + "INDICE\tCODIGO\t\tLEXEME\n"
+                    + "=============================================================\n";
             buffWriter.append(cabecalho);
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
                     try {
-                        buffWriter.append(indice + "\t" + lex.toString()+"\n");
+                        buffWriter.append(indice + "\t" + lex.toString() + "\n");
                     } catch (IOException ex) {
                         Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
                     try {
-                        buffWriter.append("-\t" + lex.toString()+"\n");
+                        buffWriter.append("-\t" + lex.toString() + "\n");
                     } catch (IOException ex) {
                         Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
             buffWriter.append("=============================================================\n");
-            
+
             buffWriter.close();
         }
     }
-    
+
     public static void arquivo_tab(String path) throws IOException {
-        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".TAB"))) {
-            String cabecalho = "*************************************************************\n"+
-                               "*\t EQUIPE 03                                    \n"+
-                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
-                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
-                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
-                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
-                               "*************************************************************\n"+
-                               "\n\n"+
-                               "============================================================================\n"+
-                               "INDICE\tCODIGO\tTIPO\tTAM\tTRUNC\tLINHAS\t\tLEXEME\n"+
-                               "============================================================================\n";
+        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".TAB"))) {
+            String cabecalho = "*************************************************************\n"
+                    + "*\t EQUIPE 03                                    \n"
+                    + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
+                    + "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"
+                    + "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"
+                    + "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"
+                    + "*************************************************************\n"
+                    + "\n\n"
+                    + "============================================================================\n"
+                    + "INDICE\tCODIGO\tTIPO\tTAM\tTRUNC\tLINHAS\t\tLEXEME\n"
+                    + "============================================================================\n";
             buffWriter.append(cabecalho);
             simbolos.forEach(simbolo -> {
                 Lexeme lex = new Lexeme(simbolo.getCodigo(), simbolo.getIdentificador());
                 int indice = indice(lex);
-                    try {
-                        buffWriter.append(indice + "\t" + simbolo.toString()+"\n");
-                    } catch (IOException ex) {
-                        Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                try {
+                    buffWriter.append(indice + "\t" + simbolo.toString() + "\n");
+                } catch (IOException ex) {
+                    Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
             buffWriter.append("============================================================================\n");
-            
+
             buffWriter.close();
         }
     }
@@ -533,3 +538,4 @@ public class Compiladores {
         return punct == '_' || punct == '!' || punct == '#' || punct == '=' || punct == '&' || punct == '(' || punct == ')' || punct == ';' || punct == '{' || punct == '}' || punct == '\"' || punct == '\'' || punct == '[' || punct == ']' || punct == ',' || punct == '<' || punct == '>' || punct == '%' || punct == '/' || punct == '|' || punct == '*' || punct == '+' || punct == '-';
     }
 }
+
