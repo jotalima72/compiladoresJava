@@ -400,11 +400,10 @@ public class Compiladores {
                 }
             }
         } else if (((letra == '\'' && !(identificador.length() > 0)) && !isComentario && !isAspasDuplas) || isAspasSimples) {
-            boolean temChar = false;
+            boolean temChar = false, tem2char = false;
             if (!isAspasSimples) {
                 identificador += letra;
                 isAspasSimples = true;
-                linhaInicial = countLinha;
             }
             if (identificador.length() > 1) {
                 temChar = true;
@@ -419,10 +418,20 @@ public class Compiladores {
                 if (Character.isAlphabetic(letra) && !temChar) {
                     identificador += letra;
                     temChar = true;
-                } else if (letra == '\'') {
-                    identificador += letra;
+                } else if (letra == '\'' && temChar) {
                     isAspasSimples = false;
-                    return true;
+                    if (!tem2char) {
+                        identificador += letra;
+                        return true;
+                    }
+                    else{
+                        
+                        identificador = "";
+                        return false;
+                    }
+                } else {
+                    if(aceita_punct(letra) || Character.isLetterOrDigit(letra) || Character.isSpace(letra))
+                        tem2char = true;
                 }
             }
         } else if ((letra == '\"' && !(identificador.length() > 0) && !isComentario && !isAspasSimples) || isAspasDuplas) {
