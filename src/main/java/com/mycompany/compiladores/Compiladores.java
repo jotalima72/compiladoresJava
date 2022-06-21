@@ -1,10 +1,14 @@
 package com.mycompany.compiladores;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,7 +31,7 @@ public class Compiladores {
     public static void main(String[] args) throws IOException {
 
         String path = "reservados";//console.nextLine();
-        leitor(path + ".txt");
+        carregar_reservados(path + ".txt");
 //        reservados.forEach(lex -> {
 //            System.out.println(lex.toString());
 //        });
@@ -56,9 +60,9 @@ public class Compiladores {
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
-                    System.out.println(lex.toString() + "\tindice\t" + indice);
+                    System.out.println(indice + "\t" + lex.toString()+"\n");
                 } else {
-                    System.out.println(lex.toString() + "\tindice\t-");
+                    System.out.println("-\t" + lex.toString()+"\n");
                 }
             });
 
@@ -67,6 +71,7 @@ public class Compiladores {
                 System.out.println("=======================");
             });
         }
+        arquivo_lexico(path);
     }
 
     public static Atomo truncador(Lexeme lexeme) {
@@ -147,7 +152,7 @@ public class Compiladores {
         }
     }
 
-    public static void leitor(String path) throws IOException {
+    public static void carregar_reservados(String path) throws IOException {
         try ( BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
             String linha;
             String aux[];
@@ -164,10 +169,46 @@ public class Compiladores {
                 }
 
             }
+            buffRead.close();
         }
     }
 
-    //public static void arquivo_
+    public static void arquivo_lexico(String path) throws IOException {
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".LEX"))) {
+            String cabecalho = "*************************************************************\n"+
+                               "*\t EQUIPE 03                                    \n"+
+                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
+                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
+                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
+                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
+                               "*************************************************************\n"+
+                               "\n\n"+
+                               "=============================================================\n"+
+                               "INDICE\tCODIGO\t\tLEXEME\n"+
+                               "=============================================================\n";
+            buffWriter.append(cabecalho);
+            lexemes.forEach(lex -> {
+                int indice = indice(lex);
+                if (indice > 0) {
+                    try {
+                        buffWriter.append(indice + "\t" + lex.toString()+"\n");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        buffWriter.append("-\t" + lex.toString()+"\n");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            buffWriter.append("=============================================================\n");
+            
+            buffWriter.close();
+        }
+    }
+
     public static void preenche_listas() {
         Lexeme lex = cria_identificador();
         Atomo simbolo = truncador(lex);

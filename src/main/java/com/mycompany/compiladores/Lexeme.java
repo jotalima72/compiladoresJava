@@ -18,7 +18,7 @@ public final class Lexeme {
     
     @Override
     public String toString() {
-        return getCodigo() + "\t" + getIdentificador(); 
+        return getCodigo() + "\t\t" + getIdentificador(); 
     }
     
     
