@@ -1,0 +1,23 @@
+*************************************************************
+*	 EQUIPE 03                                    
+*	Aluno Daniel Barbosa Bastos - (75) 99808-5390 
+*	Email daniel.b@aln.senaicimatec.edu.br        
+*	Aluno Joao Pedro de Lima O. - (74) 99963-3047 
+*	Email joao.o@aln.senaicimatec.edu.br          
+*************************************************************
+
+
+============================================================================
+INDICE	CODIGO	TIPO	TAM	TRUNC	LINHAS		LEXEME
+============================================================================
+1	ID04	VOI	6	6	1		INICIO
+2	ID01	VOI	8	8	3, 4, 6		_BUM_BUM
+3	ID06	PFO	38	35	3		123456789012.4567890123456789012345
+4	ID02	STR	26	26	4		"DANIEL ABAIXO   EH CORNO"
+5	ID03	INT	1	1	6		2
+6	ID03	INT	1	1	6		5
+7	ID01	VOI	8	8	7, 9		DAN_IEL_
+8	ID05	CHC	3	3	7, 9		'E'
+9	ID04	VOI	5	5	14		PRINT
+10	ID01	VOI	7	7	14		BUM_BUM
+============================================================================

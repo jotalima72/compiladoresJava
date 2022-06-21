@@ -72,6 +72,7 @@ public class Compiladores {
             });
         }
         arquivo_lexico(path);
+        arquivo_tab(path);
     }
 
     public static Atomo truncador(Lexeme lexeme) {
@@ -204,6 +205,35 @@ public class Compiladores {
                 }
             });
             buffWriter.append("=============================================================\n");
+            
+            buffWriter.close();
+        }
+    }
+    
+    public static void arquivo_tab(String path) throws IOException {
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".TAB"))) {
+            String cabecalho = "*************************************************************\n"+
+                               "*\t EQUIPE 03                                    \n"+
+                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
+                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
+                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
+                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
+                               "*************************************************************\n"+
+                               "\n\n"+
+                               "============================================================================\n"+
+                               "INDICE\tCODIGO\tTIPO\tTAM\tTRUNC\tLINHAS\t\tLEXEME\n"+
+                               "============================================================================\n";
+            buffWriter.append(cabecalho);
+            simbolos.forEach(simbolo -> {
+                Lexeme lex = new Lexeme(simbolo.getCodigo(), simbolo.getIdentificador());
+                int indice = indice(lex);
+                    try {
+                        buffWriter.append(indice + "\t" + simbolo.toString()+"\n");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            });
+            buffWriter.append("============================================================================\n");
             
             buffWriter.close();
         }

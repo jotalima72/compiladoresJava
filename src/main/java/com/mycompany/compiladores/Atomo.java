@@ -44,7 +44,7 @@ public final class Atomo {
 
     @Override
     public String toString() {
-        return this.codigo + "\t" + this.identificador + "\n\ttamanho: " + this.tamanho + "\n\ttruncado " + this.tamTrucado + "\n\ttipo " + this.tipo + "\n\tlinhas " + this.getLinhas();
+        return this.codigo + "\t"+ this.tipo + "\t" + this.tamanho + "\t"  + this.tamTrucado + "\t"+ this.getLinhas()+"\t\t"+this.identificador;
     }
 
     public void setTamTrucado(int tamTrucado) {
