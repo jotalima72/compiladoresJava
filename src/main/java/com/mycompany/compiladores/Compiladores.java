@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.function.Consumer;
 
 /**
  *
@@ -42,7 +41,7 @@ public class Compiladores {
                     letra = linha.charAt(index);
                     letra = Character.toUpperCase(letra);
                     boolean criaId = lerAtomo(letra, linha);
-                    if(criaId){
+                    if (criaId) {
                         Lexeme lex = cria_identificador();
                         System.out.println(lex.toString());
                     }
@@ -110,8 +109,8 @@ public class Compiladores {
     }
 
     public static boolean lerAtomo(char letra, String linha) {
-        if (Character.isSpaceChar(letra) && !(identificador.length() > 0)) {
-        } else if (Character.isDigit(letra) && !(identificador.length() > 0)) {
+        if (Character.isSpaceChar(letra) && !(identificador.length() > 0) && !isComentario) {
+        } else if (Character.isDigit(letra) && !(identificador.length() > 0) && !isComentario) {
             char posponto, pose;
             boolean temPonto = false, temE = false;
             identificador += letra;
@@ -176,7 +175,7 @@ public class Compiladores {
                     break;
                 }
             }
-        } else if ((letra == '\'' && !(identificador.length() > 0))) {
+        } else if ((letra == '\'' && !(identificador.length() > 0)) && !isComentario) {
 
             identificador += letra;
             boolean temChar = false;
@@ -187,9 +186,6 @@ public class Compiladores {
                 }
                 letra = linha.charAt(index);
                 letra = Character.toUpperCase(letra);
-//                    if (letra == '\n') {
-//                        countLinha++;
-//                    }
                 if (Character.isAlphabetic(letra) && !temChar) {
                     identificador += letra;
                     temChar = true;
@@ -198,7 +194,7 @@ public class Compiladores {
                     return true;
                 }
             }
-        } else if (letra == '\"' && !(identificador.length() > 0)) {
+        } else if (letra == '\"' && !(identificador.length() > 0) && !isComentario) {
             identificador += letra;
             while (index < linha.length()) {
                 index++;
@@ -207,64 +203,76 @@ public class Compiladores {
                 }
                 letra = linha.charAt(index);
                 letra = Character.toUpperCase(letra);
-
-                if (letra == '\n') {
-                    countLinha++;
-                }
                 if (Character.isSpaceChar(letra) || Character.isLetterOrDigit(letra) || letra == '$' || letra == '_' || letra == '.') {
                     identificador += letra;
                 } else if (letra == '\"') {
                     identificador += letra;
                     return true;
-                } else if (letra == '/' && !(identificador.length() > 0)) {
-                    char posBarra;
+                }
+            }
+        } else if (isComentario) {
+            char posBarra;
+            if (letra == '*') {
+                index++;
+                if (!(index < linha.length())) {
+                    return false;
+                }
+                posBarra = linha.charAt(index);
+                posBarra = Character.toUpperCase(posBarra);
+                if (posBarra == '/') {
+                    isComentario = false;
+                    return false;
+                } else {
+                    index--;
+                }
+            }
+        } else if (letra == '/' && !(identificador.length() > 0)) {
+            char posBarra;
+            while (index < linha.length()) {
+                index++;
+                if (!(index < linha.length())) {
+                    break;
+                }
+                posBarra = linha.charAt(index);
+                posBarra = Character.toUpperCase(posBarra);
+                if (posBarra == '/') {
                     while (index < linha.length()) {
                         index++;
                         if (!(index < linha.length())) {
                             break;
                         }
-                        posBarra = linha.charAt(index);
-                        posBarra = Character.toUpperCase(posBarra);
-                        if (posBarra == '/') {
-                            while (index < linha.length()) {
-                                index++;
-                                if (!(index < linha.length())) {
-                                    break;
-                                }
-                            }
-                        } else if (posBarra == '*') {
-                            while (index < linha.length()) {
-                                index++;
-                                if (!(index < linha.length())) {
-                                    isComentario = true;
-                                    break;
-                                }
-                                letra = linha.charAt(index);
-                                letra = Character.toUpperCase(letra);
+                    }
+                } else if (posBarra == '*') {
+                    isComentario = true;
+                    while (index < linha.length()) {
+                        index++;
+                        if (!(index < linha.length())) {
+                            break;
+                        }
+                        letra = linha.charAt(index);
+                        letra = Character.toUpperCase(letra);
 //                                    if (letra == 10) {
 //                                        ( * countLinha)++;
 //                                    }
-                                if (letra == '*') {
-                                    index++;
-                                    if (!(index < linha.length())) {
-                                        break;
-                                    }
-                                    posBarra = linha.charAt(index);
-                                    posBarra = Character.toUpperCase(posBarra);
-                                    if (posBarra == '/') {
-                                        isComentario = false;
-                                        break;
-                                    } else {
-                                        index--;
-                                    }
-                                }
+                        if (letra == '*') {
+                            index++;
+                            if (!(index < linha.length())) {
+                                break;
                             }
-                        } else {
-                            index--;
-                            identificador += letra;
-                            return true;
+                            posBarra = linha.charAt(index);
+                            posBarra = Character.toUpperCase(posBarra);
+                            if (posBarra == '/') {
+                                isComentario = false;
+                                break;
+                            } else {
+                                index--;
+                            }
                         }
                     }
+                } else {
+                    index--;
+                    identificador += letra;
+                    return true;
                 }
             }
         } else if (!Character.isLetterOrDigit(letra) && letra != '_') {
