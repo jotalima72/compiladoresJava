@@ -10,12 +10,20 @@ package com.mycompany.compiladores;
  */
 public final class Atomo {
 
-    private final String codigo;
-    private final String identificador;
-    private final int tamanho;
-    private final int tamTrucado;
-    private final String tipo;
+    private String codigo;
+    private String identificador;
+    private int tamanho;
+    private int tamTrucado;
+    private String tipo;
     private final int linhas[] = new int[5];
+
+    public Atomo() {
+        this.codigo = null;
+        this.identificador = null;
+        this.tamanho = 0;
+        this.tamTrucado = 0;
+        this.tipo = null;
+    }
 
     public Atomo(String codigo, String identificador, int tamanho, int tamTrucado, String tipo, int linha) {
         this.codigo = codigo;
@@ -25,12 +33,32 @@ public final class Atomo {
         this.tipo = tipo;
         this.linhas[0] = linha;
     }
+    
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public void setIdentificador(String identificador) {
+        this.identificador = identificador;
+    }
 
     @Override
     public String toString() {
         return this.codigo + "\t" + this.identificador + "\n\ttamanho: " + this.tamanho + "\n\ttruncado " + this.tamTrucado + "\n\ttipo " + this.tipo + "\n\tlinhas " + this.getLinhas();
     }
 
+    public void setTamTrucado(int tamTrucado) {
+        this.tamTrucado = tamTrucado;
+    }
+
+    public void setTamanho(int tamanho) {
+        this.tamanho = tamanho;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    
     public String getLinhas() {
         String retorno = "";
         int i = 0;
@@ -75,5 +103,4 @@ public final class Atomo {
             }
         }
     }
-
 }

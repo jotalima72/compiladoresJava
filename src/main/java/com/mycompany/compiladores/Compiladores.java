@@ -37,25 +37,29 @@ public class Compiladores {
             char letra;
             while ((linha = buffRead.readLine()) != null) {
                 //System.out.println(line);
-                
+
                 for (index = 0; index < linha.length(); index++) {
                     letra = linha.charAt(index);
                     letra = Character.toUpperCase(letra);
                     boolean criaId = lerAtomo(letra, linha);
                     if (criaId) {
                         Lexeme lex = cria_identificador();
+                        Atomo simbolo = truncador(lex);
+                        lex.setCodigo(simbolo.getCodigo());
+                        lex.setIdentificador(simbolo.getIdentificador());
                         lexemes.add(lex);
                         if (lex.getCodigo().contains("ID")) {
                             int indice = indice(lex);
                             if (indice < 0) {
-                                int tamanho = lex.getIdentificador().length();
-                                String tipo = retorna_tipo(lex.getCodigo());
-                                Atomo simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamanho, tipo, countLinha);
+                                int tamanho = simbolo.getTamanho();
+                                int tamTrunc = simbolo.getTamTrucado();
+                                String tipo = simbolo.getTipo();
+                                simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamTrunc, tipo, countLinha);
                                 simbolos.add(simbolo);
                             } else {
                                 Atomo s = simbolos.remove(indice - 1);
                                 s.setLinhas(countLinha);
-                                simbolos.add(indice-1, s);
+                                simbolos.add(indice - 1, s);
                             }
                         }
                     }
@@ -76,6 +80,60 @@ public class Compiladores {
                 System.out.println("=======================");
             });
         }
+    }
+
+    public static Atomo truncador(Lexeme lexeme) {
+        Atomo atomo = new Atomo();
+        atomo.setCodigo(lexeme.getCodigo());
+        atomo.setIdentificador(lexeme.getIdentificador());
+        atomo.setTamanho(atomo.getIdentificador().length());
+        atomo.setTamTrucado(atomo.getIdentificador().length());
+        atomo.setTipo(retorna_tipo(atomo.getCodigo()));
+
+        if (atomo.getIdentificador().length() >= 35) {
+            String id = atomo.getIdentificador();
+            String auxId = "";
+            switch (atomo.getTipo()) {
+                case "STRING":
+                    for (int i = 0; i < 34; i++) {
+                        auxId += id.charAt(i);
+                    }
+                    auxId += "\"";
+                    break;
+                case "INT":
+                    for (int i = 0; i < 35; i++) {
+                        auxId += id.charAt(i);
+                    }
+                    break;
+                case "FLOAT":
+                    int tam = 35;
+                    if (auxId.indexOf(".") == 35) {
+                        tam = 34;
+                    }
+                    for (int i = 0; i < tam; i++) {
+                        auxId += id.charAt(i);
+                    }
+                    if (!auxId.contains(".")) {
+                        identificador = auxId;
+                        Lexeme lex = cria_identificador();
+                        atomo.setCodigo(lex.getCodigo());
+                        atomo.setTipo(retorna_tipo(lex.getCodigo()));
+                    }
+                    break;
+                case "VOID":
+                    for (int i = 0; i < 35; i++) {
+                        auxId += id.charAt(i);
+                    }
+                    identificador = auxId;
+                    Lexeme lex = cria_identificador();
+                    atomo.setCodigo(lex.getCodigo());
+                    atomo.setTipo(retorna_tipo(lex.getCodigo()));
+                    break;
+            }
+            atomo.setIdentificador(auxId);
+            atomo.setTamTrucado(auxId.length());
+        }
+        return atomo;
     }
 
     public static int indice(Lexeme lex) {
@@ -133,6 +191,7 @@ public class Compiladores {
         if (atominho == null) {
             atominho = new Lexeme();
             String aux;
+
             atominho.setIdentificador(identificador);
             if (Character.isDigit(identificador.charAt(0))) {
                 if (identificador.contains(".")) {
