@@ -20,6 +20,9 @@ public class Compiladores {
     public static String identificador = "";
     public static int index = 0;
     public static boolean isComentario = false;
+    public static boolean isAspasSimples = false;
+    public static boolean isAspasDuplas = false;
+    public static int linhaInicial = 0;
 
     public static void main(String[] args) throws IOException {
 
@@ -45,7 +48,7 @@ public class Compiladores {
                         preenche_listas();
                     }
                 }
-                if (identificador.length() > 0) {
+                if (identificador.length() > 0 && !isAspasDuplas && !isAspasSimples) {
                     preenche_listas();
                 }
                 countLinha++;
@@ -78,7 +81,7 @@ public class Compiladores {
             String id = atomo.getIdentificador();
             String auxId = "";
             switch (atomo.getTipo()) {
-                case "STRING":
+                case "STR":
                     for (int i = 0; i < 34; i++) {
                         auxId += id.charAt(i);
                     }
@@ -89,7 +92,7 @@ public class Compiladores {
                         auxId += id.charAt(i);
                     }
                     break;
-                case "FLOAT":
+                case "PFO":
                     int tam = 35;
                     if (id.indexOf(".") == 34) {
                         tam = 34;
@@ -104,7 +107,7 @@ public class Compiladores {
                         atomo.setTipo(retorna_tipo(lex.getCodigo()));
                     }
                     break;
-                case "VOID":
+                case "VOI":
                     for (int i = 0; i < 35; i++) {
                         auxId += id.charAt(i);
                     }
@@ -132,15 +135,15 @@ public class Compiladores {
     public static String retorna_tipo(String cod) {
         switch (cod) {
             case "ID02":
-                return "STRING";
+                return "STR";
             case "ID03":
                 return "INT";
             case "ID05":
-                return "CHAR";
+                return "CHC";
             case "ID06":
-                return "FLOAT";
+                return "PFO";
             default:
-                return "VOID";
+                return "VOI";
         }
     }
 
@@ -164,6 +167,7 @@ public class Compiladores {
         }
     }
 
+    //public static void arquivo_
     public static void preenche_listas() {
         Lexeme lex = cria_identificador();
         Atomo simbolo = truncador(lex);
@@ -176,11 +180,21 @@ public class Compiladores {
                 int tamanho = simbolo.getTamanho();
                 int tamTrunc = simbolo.getTamTrucado();
                 String tipo = simbolo.getTipo();
-                simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamTrunc, tipo, countLinha);
+                int linha = countLinha;
+                if (linhaInicial > 0) {
+                    linha = linhaInicial;
+                    linhaInicial = 0;
+                }
+                simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamTrunc, tipo, linha);
                 simbolos.add(simbolo);
             } else {
                 Atomo s = simbolos.remove(indice - 1);
-                s.setLinhas(countLinha);
+                int linha = countLinha;
+                if (linhaInicial > 0) {
+                    linha = linhaInicial;
+                    linhaInicial = 0;
+                }
+                s.setLinhas(linha);
                 if (s.getTamanho() != simbolo.getTamanho()) {
                     s.setTamanho(simbolo.getTamanho());
                 }
@@ -295,10 +309,16 @@ public class Compiladores {
                     break;
                 }
             }
-        } else if ((letra == '\'' && !(identificador.length() > 0)) && !isComentario) {
-
-            identificador += letra;
+        } else if (((letra == '\'' && !(identificador.length() > 0)) && !isComentario && !isAspasDuplas) || isAspasSimples) {
             boolean temChar = false;
+            if (!isAspasSimples) {
+                identificador += letra;
+                isAspasSimples = true;
+                linhaInicial = countLinha;
+            }
+            if (identificador.length() > 1) {
+                temChar = true;
+            }
             while (index < linha.length()) {
                 index++;
                 if (!(index < linha.length())) {
@@ -311,11 +331,16 @@ public class Compiladores {
                     temChar = true;
                 } else if (letra == '\'') {
                     identificador += letra;
+                    isAspasSimples = false;
                     return true;
                 }
             }
-        } else if (letra == '\"' && !(identificador.length() > 0) && !isComentario) {
-            identificador += letra;
+        } else if ((letra == '\"' && !(identificador.length() > 0) && !isComentario && !isAspasSimples) || isAspasDuplas) {
+            if (!isAspasDuplas) {
+                identificador += letra;
+                isAspasDuplas = true;
+                linhaInicial = countLinha;
+            }
             while (index < linha.length()) {
                 index++;
                 if (!(index < linha.length())) {
@@ -327,6 +352,7 @@ public class Compiladores {
                     identificador += letra;
                 } else if (letra == '\"') {
                     identificador += letra;
+                    isAspasDuplas = false;
                     return true;
                 }
             }
