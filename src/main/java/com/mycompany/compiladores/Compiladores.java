@@ -37,7 +37,7 @@ public class Compiladores {
             char letra;
             while ((linha = buffRead.readLine()) != null) {
                 //System.out.println(line);
-                countLinha++;
+                
                 for (index = 0; index < linha.length(); index++) {
                     letra = linha.charAt(index);
                     letra = Character.toUpperCase(letra);
@@ -46,24 +46,34 @@ public class Compiladores {
                         Lexeme lex = cria_identificador();
                         lexemes.add(lex);
                         if (lex.getCodigo().contains("ID")) {
-                            if (indice(lex) < 0) {
-                                int size = simbolos.size();
+                            int indice = indice(lex);
+                            if (indice < 0) {
+                                int tamanho = lex.getIdentificador().length();
                                 String tipo = retorna_tipo(lex.getCodigo());
-                                Atomo simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(),size, size, tipo, countLinha);
+                                Atomo simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamanho, tipo, countLinha);
                                 simbolos.add(simbolo);
+                            } else {
+                                Atomo s = simbolos.remove(indice - 1);
+                                s.setLinhas(countLinha);
+                                simbolos.add(indice-1, s);
                             }
                         }
                     }
                 }
+                countLinha++;
             }
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
                     System.out.println(lex.toString() + "\tindice\t" + indice);
+                } else {
+                    System.out.println(lex.toString() + "\tindice\t-");
                 }
-                else{
-                    System.out.println(lex.toString() + "\tindice\t-");                    
-                }
+            });
+
+            simbolos.forEach(simba -> {
+                System.out.println(simba.toString());
+                System.out.println("=======================");
             });
         }
     }

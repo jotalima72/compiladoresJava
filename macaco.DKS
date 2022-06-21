@@ -1,6 +1,7 @@
 program inicio{
 bo@@ol begin{
     int _bum_bum = 72.82e+s;
+    int _bum_bum = "daniel eh corno";
     if( _bum_bum/2 >5){
     char dan_iel_ = 'e ahsdjkfahsdfkjasdl';
     float _pir = "daniel";
