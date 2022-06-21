@@ -5,20 +5,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import sun.util.locale.LocaleUtils;
+import java.util.function.Consumer;
 
 /**
  *
  * @author jota
+ * @author Daniel
  */
 public class Compiladores {
 
     public static ArrayList<Lexeme> reservados = new ArrayList<>();
     public static ArrayList<Lexeme> lexemes = new ArrayList<>();
     public static int countLinha = 1;
-    public static boolean isAspasSimples = false;
-    public static boolean isAspasDuplas = false;
-    public static String idSocorro = "";
+    public static String identificador = "";
+    public static int index = 0;
     public static boolean isComentario = false;
 
     public static void main(String[] args) throws IOException {
@@ -29,14 +29,24 @@ public class Compiladores {
 //            System.out.println(lex.toString());
 //        });
         System.out.println("Nome do arquivo: ");
-        Scanner console = new Scanner(System.in);
-        path = console.nextLine();
+        //Scanner console = new Scanner(System.in);
+        path = "macaco";//console.nextLine();
         try ( BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"))) {
-            String line;
-            while ((line = buffRead.readLine()) != null) {
+            String linha;
+            identificador = "";
+            char letra;
+            while ((linha = buffRead.readLine()) != null) {
                 //System.out.println(line);
                 countLinha++;
-                lerAtomo(line);
+                for (index = 0; index < linha.length(); index++) {
+                    letra = linha.charAt(index);
+                    letra = Character.toUpperCase(letra);
+                    boolean criaId = lerAtomo(letra, linha);
+                    if(criaId){
+                        Lexeme lex = cria_identificador();
+                        System.out.println(lex.toString());
+                    }
+                }
             }
         }
     }
@@ -61,241 +71,240 @@ public class Compiladores {
         }
     }
 
-    public static Lexeme cria_identificador(String identificador) {
-        return null;
+    public static Lexeme cria_identificador() {
+        Lexeme atominho = null;
+        for (Lexeme reservado : reservados) {
+            if (reservado.getIdentificador().contentEquals(identificador)) {
+                atominho = reservado;
+                break;
+            }
+        }
+        if (atominho == null) {
+            atominho = new Lexeme();
+            String aux;
+            atominho.setIdentificador(identificador);
+            if (Character.isDigit(identificador.charAt(0))) {
+                if (identificador.contains(".")) {
+                    aux = "FLOAT-NUMBER";
+                } else {
+                    aux = "INTEGER-NUMBER";
+                }
+            } else if (identificador.charAt(0) == '\'') {
+                aux = "CHARACTER";
+            } else if (identificador.charAt(0) == '\"') {
+                aux = "CONSTANT-STRING";
+            } else if (identificador.contains("_")) {
+                aux = "IDENTIFIER";
+            } else {
+                aux = "FUNCTION";
+            }
+            for (Lexeme reservado : reservados) {
+                if (reservado.getIdentificador().contentEquals(aux)) {
+                    atominho.setCodigo(reservado.getCodigo());
+                    break;
+                }
+            }
+        }
+        identificador = "";
+        return atominho;
     }
 
-    public static Lexeme lerAtomo(String linha) {
-        int index;
-        char letra;
-        Lexeme lexeme = null;
-        String identificador = "";
-        for (index = 0; index < linha.length(); index++) {
-            letra = linha.charAt(index);
-            letra = Character.toUpperCase(letra);
-            if (Character.isSpaceChar(letra) && !(identificador.length() > 0) && !checkSocorro()) {
-            } else if (Character.isDigit(letra) && !(identificador.length() > 0) && !checkSocorro()) {
-                char posponto, pose;
-                boolean temPonto = false, temE = false;
-                identificador += letra;
-                while (index < linha.length()) {
+    public static boolean lerAtomo(char letra, String linha) {
+        if (Character.isSpaceChar(letra) && !(identificador.length() > 0)) {
+        } else if (Character.isDigit(letra) && !(identificador.length() > 0)) {
+            char posponto, pose;
+            boolean temPonto = false, temE = false;
+            identificador += letra;
+            while (index < linha.length()) {
+                index++;
+                if (!(index < linha.length())) {
+                    break;
+                }
+                letra = linha.charAt(index);
+                letra = Character.toUpperCase(letra);
+                if (Character.isDigit(letra)) {
+                    identificador += letra;
+                } else if (letra == '.' && !temPonto) {
                     index++;
                     if (!(index < linha.length())) {
                         break;
                     }
-                    letra = linha.charAt(index);
-                    letra = Character.toUpperCase(letra);
-                    if (Character.isDigit(letra)) {
-                        identificador += letra;
-                    } else if (letra == '.' && !temPonto) {
-                        index++;
-                        if (!(index < linha.length())) {
-                            break;
-                        }
-                        posponto = linha.charAt(index);
-                        posponto = Character.toUpperCase(posponto);
+                    posponto = linha.charAt(index);
+                    posponto = Character.toUpperCase(posponto);
 
-                        if (Character.isDigit(posponto)) {
-                            identificador += letra;
-                            identificador += posponto;
-                            temPonto = true;
-                        } else {
-                            index--;
-                            break;
-                        }
-                    } else if (letra == 'E' && temPonto && !temE) {
+                    if (Character.isDigit(posponto)) {
+                        identificador += letra;
+                        identificador += posponto;
+                        temPonto = true;
+                    } else {
+                        index--;
+                        break;
+                    }
+                } else if (letra == 'E' && temPonto && !temE) {
+                    index++;
+                    if (!(index < linha.length())) {
+                        break;
+                    }
+                    posponto = linha.charAt(index);
+                    posponto = Character.toUpperCase(posponto);
+                    if (Character.isDigit(posponto)) {
+                        identificador += letra;
+                        identificador += posponto;
+                        temE = true;
+                    } else if (posponto == '-' || posponto == '+') {
                         index++;
                         if (!(index < linha.length())) {
                             break;
                         }
-                        posponto = linha.charAt(index);
-                        posponto = Character.toUpperCase(posponto);
-                        if (Character.isDigit(posponto)) {
+                        pose = linha.charAt(index);
+                        pose = Character.toUpperCase(pose);
+                        if (Character.isDigit(pose)) {
                             identificador += letra;
                             identificador += posponto;
+                            identificador += pose;
                             temE = true;
-                        } else if (posponto == '-' || posponto == '+') {
-                            index++;
-                            if (!(index < linha.length())) {
-                                break;
-                            }
-                            pose = linha.charAt(index);
-                            pose = Character.toUpperCase(pose);
-                            if (Character.isDigit(pose)) {
-                                identificador += letra;
-                                identificador += posponto;
-                                identificador += pose;
-                                temE = true;
-                            } else {
-                                index -= 3;
-                                lexeme = cria_identificador(identificador);
-                                return lexeme;
-                            }
                         } else {
-                            index--;
-                            break;
+                            index -= 3;
+                            return true;
                         }
                     } else {
                         index--;
                         break;
                     }
-                }
-            } else if ((letra == '\'' && !(identificador.length() > 0)) && !checkSocorro()) {
-                if (!isAspasSimples) {
-                    identificador += letra;
                 } else {
-                    identificador = idSocorro;
-                    idSocorro = "";
-                    isAspasSimples = false;
+                    index--;
+                    break;
                 }
-                boolean temChar = false;
-                while (index < linha.length()) {
-                    index++;
-                    if (!(index < linha.length())) {
-                        idSocorro = identificador;
-                        isAspasSimples = true;
-                        break;
-                    }
-                    letra = linha.charAt(index);
-                    letra = Character.toUpperCase(letra);
+            }
+        } else if ((letra == '\'' && !(identificador.length() > 0))) {
+
+            identificador += letra;
+            boolean temChar = false;
+            while (index < linha.length()) {
+                index++;
+                if (!(index < linha.length())) {
+                    break;
+                }
+                letra = linha.charAt(index);
+                letra = Character.toUpperCase(letra);
 //                    if (letra == '\n') {
 //                        countLinha++;
 //                    }
-                    if (Character.isAlphabetic(letra) && !temChar) {
-                        identificador += letra;
-                        temChar = true;
-                    } else if (letra == '\'') {
-                        identificador += letra;
-                        lexeme = cria_identificador(identificador);
-                        return lexeme;
-                    }
+                if (Character.isAlphabetic(letra) && !temChar) {
+                    identificador += letra;
+                    temChar = true;
+                } else if (letra == '\'') {
+                    identificador += letra;
+                    return true;
                 }
-            } else if (letra == '\"' && !(identificador.length() > 0)) {
-                identificador += letra;
-                while (index < linha.length()) {
-                    index++;
-                    if (!(index < linha.length())) {
-                        break;
-                    }
-                    letra = linha.charAt(index);
-                    letra = Character.toUpperCase(letra);
+            }
+        } else if (letra == '\"' && !(identificador.length() > 0)) {
+            identificador += letra;
+            while (index < linha.length()) {
+                index++;
+                if (!(index < linha.length())) {
+                    break;
+                }
+                letra = linha.charAt(index);
+                letra = Character.toUpperCase(letra);
 
-                    if (letra == '\n') {
-                        countLinha++;
-                    }
-                    if (Character.isSpaceChar(letra) || Character.isLetterOrDigit(letra) || letra == '$' || letra == '_' || letra == '.') {
-                        identificador += letra;
-                    } else if (letra == '\"') {
-                        identificador += letra;
-                        lexeme = cria_identificador(identificador);
-                        return lexeme;
-                    } else if (letra == '/' && !(identificador.length() > 0)) {
-                        char posBarra;
-                        while (index < linha.length()) {
-                            index++;
-                            if (!(index < linha.length())) {
-                                break;
-                            }
-                            posBarra = linha.charAt(index);
-                            posBarra = Character.toUpperCase(posBarra);
-                            if (posBarra == '/') {
-                                while (index < linha.length()) {
-                                    index++;
-                                    if (!(index < linha.length())) {
-                                        break;
-                                    }
-//                                    posBarra = linha.charAt(index);
-//                                    posBarra = Character.toUpperCase(posBarra);
-//                                    if (letra[0] == 10) {
-//                                        ( * countLinha)++;
-//                                        break;
-//                                    }
+                if (letra == '\n') {
+                    countLinha++;
+                }
+                if (Character.isSpaceChar(letra) || Character.isLetterOrDigit(letra) || letra == '$' || letra == '_' || letra == '.') {
+                    identificador += letra;
+                } else if (letra == '\"') {
+                    identificador += letra;
+                    return true;
+                } else if (letra == '/' && !(identificador.length() > 0)) {
+                    char posBarra;
+                    while (index < linha.length()) {
+                        index++;
+                        if (!(index < linha.length())) {
+                            break;
+                        }
+                        posBarra = linha.charAt(index);
+                        posBarra = Character.toUpperCase(posBarra);
+                        if (posBarra == '/') {
+                            while (index < linha.length()) {
+                                index++;
+                                if (!(index < linha.length())) {
+                                    break;
                                 }
-                            } else if (posBarra == '*') {
-                                while (index < linha.length()) {
-                                    index++;
-                                    if (!(index < linha.length())) {
-                                        isComentario = true;
-                                        break;
-                                    }
-                                    letra = linha.charAt(index);
-                                    letra = Character.toUpperCase(letra);
+                            }
+                        } else if (posBarra == '*') {
+                            while (index < linha.length()) {
+                                index++;
+                                if (!(index < linha.length())) {
+                                    isComentario = true;
+                                    break;
+                                }
+                                letra = linha.charAt(index);
+                                letra = Character.toUpperCase(letra);
 //                                    if (letra == 10) {
 //                                        ( * countLinha)++;
 //                                    }
-                                    if (letra == '*') {
-                                        index++;
-                                        if (!(index < linha.length())) {
-                                            break;
-                                        }
-                                        posBarra = linha.charAt(index);
-                                        posBarra = Character.toUpperCase(posBarra);
-                                        if (posBarra == '/') {
-                                            isComentario = false;
-                                            break;
-                                        } else {
-                                            index--;
-                                        }
+                                if (letra == '*') {
+                                    index++;
+                                    if (!(index < linha.length())) {
+                                        break;
+                                    }
+                                    posBarra = linha.charAt(index);
+                                    posBarra = Character.toUpperCase(posBarra);
+                                    if (posBarra == '/') {
+                                        isComentario = false;
+                                        break;
+                                    } else {
+                                        index--;
                                     }
                                 }
-                            } else {
-                                index--;
-                                identificador += letra;
-                                lexeme = cria_identificador(identificador);
-                                return lexeme;
                             }
+                        } else {
+                            index--;
+                            identificador += letra;
+                            return true;
                         }
                     }
                 }
-            } else if (!Character.isLetterOrDigit(letra) && letra != '_') {
-                if (aceita_punct(letra)) {
-                    if (!(identificador.length() > 0)) {
-                        identificador += letra;
-                        if (ispunct_duplicado(letra)) {
-                            char posDuplicavel;
-                            index++;
-                            if (!(index < linha.length())) {
-                                break;
-                            }
-                            posDuplicavel = linha.charAt(index);
-                            posDuplicavel = Character.toUpperCase(posDuplicavel);
-                            if (posDuplicavel == '=') {
-                                identificador += posDuplicavel;
-                            } else {
-                                index--;
-                            }
-                        }
-                        lexeme = cria_identificador(identificador);
-                        return lexeme;
-                    }
-                }
-                if (Character.isSpaceChar(letra) || letra == '.') {
-                    lexeme = cria_identificador(identificador);
-                    return lexeme;
-                } else if (!Character.isSpaceChar(letra) && aceita_punct(letra)) {
-                    index--;
-                    lexeme = cria_identificador(identificador);
-                    return lexeme;
-                }
-            } else {
-                identificador += letra;
             }
+        } else if (!Character.isLetterOrDigit(letra) && letra != '_') {
+            if (aceita_punct(letra)) {
+                if (!(identificador.length() > 0)) {
+                    identificador += letra;
+                    if (ispunct_duplicado(letra)) {
+                        char posDuplicavel;
+                        index++;
+                        if (!(index < linha.length())) {
+                            return false;
+                        }
+                        posDuplicavel = linha.charAt(index);
+                        posDuplicavel = Character.toUpperCase(posDuplicavel);
+                        if (posDuplicavel == '=') {
+                            identificador += posDuplicavel;
+                        } else {
+                            index--;
+                        }
+                    }
+                    return true;
+                }
+            }
+            if (Character.isSpaceChar(letra) || letra == '.') {
+                return true;
+            } else if (!Character.isSpaceChar(letra) && aceita_punct(letra)) {
+                index--;
+                return true;
+            }
+        } else {
+            identificador += letra;
         }
-        if ((identificador.length() > 0)) {
-            lexeme = cria_identificador(identificador);
-        }
-        return lexeme;
+        return false;
     }
 
-    public static boolean checkSocorro() {
-        return (isAspasDuplas || isAspasSimples);
-    }
-
-    public boolean ispunct_duplicado(char character) {
+    public static boolean ispunct_duplicado(char character) {
         return character == '!' || character == '=' || character == '>' || character == '<';
     }
 
-    public boolean aceita_punct(char punct) {
+    public static boolean aceita_punct(char punct) {
         return punct == '_' || punct == '!' || punct == '#' || punct == '=' || punct == '&' || punct == '(' || punct == ')' || punct == ';' || punct == '{' || punct == '}' || punct == '\"' || punct == '\'' || punct == '[' || punct == ']' || punct == ',' || punct == '<' || punct == '>' || punct == '%' || punct == '/' || punct == '|' || punct == '*' || punct == '+' || punct == '-';
     }
 }

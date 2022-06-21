@@ -13,6 +13,9 @@ public final class Lexeme {
         this.setIdentificador(id);
     }
 
+    public Lexeme() {
+    }
+    
     @Override
     public String toString() {
         return getCodigo() + "\t" + getIdentificador(); 
