@@ -9,12 +9,13 @@ package com.mycompany.compiladores;
  * @author jota
  */
 public final class Atomo {
+    
     private final String codigo;
     private final String identificador;
     private final int tamanho;
     private final int tamTrucado;
     private final String tipo;
-    private int linhas[];
+    private final int linhas[] = new int[6];
 
     public Atomo(String codigo, String identificador, int tamanho, int tamTrucado, String tipo, int linha) {
         this.codigo = codigo;

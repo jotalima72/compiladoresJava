@@ -15,6 +15,7 @@ public class Compiladores {
 
     public static ArrayList<Lexeme> reservados = new ArrayList<>();
     public static ArrayList<Lexeme> lexemes = new ArrayList<>();
+    public static ArrayList<Atomo> simbolos = new ArrayList<>();
     public static int countLinha = 1;
     public static String identificador = "";
     public static int index = 0;
@@ -43,10 +44,51 @@ public class Compiladores {
                     boolean criaId = lerAtomo(letra, linha);
                     if (criaId) {
                         Lexeme lex = cria_identificador();
-                        System.out.println(lex.toString());
+                        lexemes.add(lex);
+                        if (lex.getCodigo().contains("ID")) {
+                            if (indice(lex) < 0) {
+                                int size = simbolos.size();
+                                String tipo = retorna_tipo(lex.getCodigo());
+                                Atomo simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(),size, size, tipo, countLinha);
+                                simbolos.add(simbolo);
+                            }
+                        }
                     }
                 }
             }
+            lexemes.forEach(lex -> {
+                int indice = indice(lex);
+                if (indice > 0) {
+                    System.out.println(lex.toString() + "\tindice\t" + indice);
+                }
+                else{
+                    System.out.println(lex.toString() + "\tindice\t-");                    
+                }
+            });
+        }
+    }
+
+    public static int indice(Lexeme lex) {
+        for (Atomo simbolo : simbolos) {
+            if (simbolo.getIdentificador().contentEquals(lex.getIdentificador())) {
+                return simbolos.indexOf(simbolo) + 1;
+            }
+        }
+        return -1;
+    }
+
+    public static String retorna_tipo(String cod) {
+        switch (cod) {
+            case "ID02":
+                return "STRING";
+            case "ID03":
+                return "INT";
+            case "ID05":
+                return "CHAR";
+            case "ID06":
+                return "FLOAT";
+            default:
+                return "VOID";
         }
     }
 
