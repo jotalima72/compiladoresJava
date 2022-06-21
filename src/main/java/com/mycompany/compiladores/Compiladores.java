@@ -78,7 +78,7 @@ public class Compiladores {
         } catch (FileNotFoundException x) {
             System.out.println("Arquivo não encontrado");
         }
-        
+
     }
 
     public static Atomo truncador(Lexeme lexeme) {
@@ -108,8 +108,7 @@ public class Compiladores {
                     int tam = 35;
                     if (id.indexOf(".") == 34 || id.indexOf("E") == 34) {
                         tam = 34;
-                    }
-                    else if(id.indexOf("+") == 34 || id.indexOf("-") == 34){
+                    } else if (id.indexOf("+") == 34 || id.indexOf("-") == 34) {
                         tam = 33;
                     }
                     for (int i = 0; i < tam; i++) {
@@ -163,7 +162,7 @@ public class Compiladores {
     }
 
     public static void carregar_reservados(String path) throws IOException {
-        try (BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
+        try ( BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
             String linha;
             String aux[];
             Lexeme lex;
@@ -184,7 +183,7 @@ public class Compiladores {
     }
 
     public static void arquivo_lexico(String path) throws IOException {
-        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".LEX"))) {
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".LEX"))) {
             String cabecalho = "*************************************************************\n"
                     + "*\t EQUIPE 03                                    \n"
                     + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
@@ -220,7 +219,7 @@ public class Compiladores {
     }
 
     public static void arquivo_tab(String path) throws IOException {
-        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".TAB"))) {
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".TAB"))) {
             String cabecalho = "*************************************************************\n"
                     + "*\t EQUIPE 03                                    \n"
                     + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
@@ -254,14 +253,14 @@ public class Compiladores {
         lex.setCodigo(simbolo.getCodigo());
         lex.setIdentificador(simbolo.getIdentificador());
         lexemes.add(lex);
-        if(lex.getIdentificador().contentEquals("(")){
-            int pos = lexemes.size()-2;
+        if (lex.getIdentificador().contentEquals("(")) {
+            int pos = lexemes.size() - 2;
             Lexeme maybeFunc = lexemes.get(pos);
-            if(maybeFunc.getCodigo().contentEquals("ID01") && !maybeFunc.getIdentificador().contains("_")){
+            if (maybeFunc.getCodigo().contentEquals("ID01") && !maybeFunc.getIdentificador().contains("_")) {
                 maybeFunc = lexemes.remove(pos);
                 maybeFunc.setCodigo("ID04");
                 lexemes.add(pos, maybeFunc);
-                pos = indice(maybeFunc)-1;
+                pos = indice(maybeFunc) - 1;
                 Atomo sim = simbolos.remove(pos);
                 sim.setCodigo(maybeFunc.getCodigo());
                 simbolos.add(pos, sim);
@@ -319,7 +318,7 @@ public class Compiladores {
                 aux = "CHARACTER";
             } else if (identificador.charAt(0) == '\"') {
                 aux = "CONSTANT-STRING";
-            } else{
+            } else {
                 aux = "IDENTIFIER";
             }
             for (Lexeme reservado : reservados) {
@@ -429,12 +428,13 @@ public class Compiladores {
         } else if ((letra == '\"' && !(identificador.length() > 0) && !isComentario && !isAspasSimples) || isAspasDuplas) {
             if (!isAspasDuplas) {
                 identificador += letra;
-                isAspasDuplas = true;
                 linhaInicial = countLinha;
             }
             while (index < linha.length()) {
                 index++;
                 if (!(index < linha.length())) {
+                    isAspasDuplas = true;
+                    linhaInicial = 0;
                     break;
                 }
                 letra = linha.charAt(index);
@@ -443,7 +443,11 @@ public class Compiladores {
                     identificador += letra;
                 } else if (letra == '\"') {
                     identificador += letra;
-                    isAspasDuplas = false;
+                    if (isAspasDuplas) {
+                        isAspasDuplas = false;
+                        identificador = "";
+                        return false;
+                    }
                     return true;
                 }
             }
@@ -553,4 +557,3 @@ public class Compiladores {
         return punct == '_' || punct == '!' || punct == '#' || punct == '=' || punct == '&' || punct == '(' || punct == ')' || punct == ';' || punct == '{' || punct == '}' || punct == '\"' || punct == '\'' || punct == '[' || punct == ']' || punct == ',' || punct == '<' || punct == '>' || punct == '%' || punct == '/' || punct == '|' || punct == '*' || punct == '+' || punct == '-';
     }
 }
-
