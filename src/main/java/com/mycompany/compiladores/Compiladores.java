@@ -2,6 +2,7 @@ package com.mycompany.compiladores;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -250,6 +251,19 @@ public class Compiladores {
         lex.setCodigo(simbolo.getCodigo());
         lex.setIdentificador(simbolo.getIdentificador());
         lexemes.add(lex);
+        if(lex.getIdentificador().contentEquals("(")){
+            int pos = lexemes.size()-2;
+            Lexeme maybeFunc = lexemes.get(pos);
+            if(maybeFunc.getCodigo().contentEquals("ID01") && !maybeFunc.getIdentificador().contains("_")){
+                maybeFunc = lexemes.remove(pos);
+                maybeFunc.setCodigo("ID04");
+                lexemes.add(pos, maybeFunc);
+                pos = indice(maybeFunc)-1;
+                Atomo sim = simbolos.remove(pos);
+                sim.setCodigo(maybeFunc.getCodigo());
+                simbolos.add(pos, sim);
+            }
+        }
         if (lex.getCodigo().contains("ID")) {
             int indice = indice(lex);
             if (indice < 0) {
@@ -302,10 +316,8 @@ public class Compiladores {
                 aux = "CHARACTER";
             } else if (identificador.charAt(0) == '\"') {
                 aux = "CONSTANT-STRING";
-            } else if (identificador.contains("_")) {
+            } else{
                 aux = "IDENTIFIER";
-            } else {
-                aux = "FUNCTION";
             }
             for (Lexeme reservado : reservados) {
                 if (reservado.getIdentificador().contentEquals(aux)) {

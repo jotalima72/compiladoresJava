@@ -1,17 +1,17 @@
 program inicio{
 bo@@ol begin{
     int _bum_bum = 123456789012.4567890123456789012345678;
-    int _bum_bum = "daniel abaixo
+    int _bum_bum( = "daniel abaixo
     eh corno";
     if( _bum_bum/2 >5){
     char dan_iel_ = 'e ahsdjk
     fahsdfkjasdl';
     char dan_iel_ = 'e';
-    float ONomeDaMinhaVariavelEhGrandePorqueAVariavelEhMinha = "daniel eh corno mas eh meu amigo gostosooooo";
+    /*float ONomeDaMinhaVariavelEhGrandePorqueAVariavelEhMinha = "daniel eh corno mas eh meu amigo gostosooooo";
     ONomeDaMinhaVariavelEhGrandePorqueAVariavelTemQueSerGrandeEExplicativa = "daniel eh corno mas eh meu amigo gostosooooo e viado";
     ONomeDaMinhaVariavelEhGrandePorqueVariavelTemQueSerGrandeEExplicativa = 123456789012345678901234567890123456789.1234;
-    bum_bum = 1234567890123456789012345678901234.678901234567890;
-    print bum_bum;
+    bum_bum = 1234567890123456789012345678901234.678901234567890;*/
+    print(bum_bum);
     }
 return true;
     }

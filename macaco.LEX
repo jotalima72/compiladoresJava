@@ -11,7 +11,7 @@
 INDICE	CODIGO		LEXEME
 =============================================================
 -	PR12		PROGRAM
-1	ID04		INICIO
+1	ID01		INICIO
 -	SR07		{
 -	PR01		BOOL
 -	PR09		BEGIN
@@ -23,6 +23,7 @@ INDICE	CODIGO		LEXEME
 -	SR05		;
 -	PR14		INT
 2	ID01		_BUM_BUM
+-	SR03		(
 -	SR10		=
 4	ID02		"DANIEL ABAIXO   EH CORNO"
 -	SR05		;
@@ -46,7 +47,9 @@ INDICE	CODIGO		LEXEME
 8	ID05		'E'
 -	SR05		;
 9	ID04		PRINT
+-	SR03		(
 10	ID01		BUM_BUM
+-	SR04		)
 -	SR05		;
 -	SR19		}
 -	PR10		RETURN
