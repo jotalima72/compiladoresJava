@@ -106,8 +106,11 @@ public class Compiladores {
                     break;
                 case "PFO":
                     int tam = 35;
-                    if (id.indexOf(".") == 34) {
+                    if (id.indexOf(".") == 34 || id.indexOf("E") == 34) {
                         tam = 34;
+                    }
+                    else if(id.indexOf("+") == 34 || id.indexOf("-") == 34){
+                        tam = 33;
                     }
                     for (int i = 0; i < tam; i++) {
                         auxId += id.charAt(i);
