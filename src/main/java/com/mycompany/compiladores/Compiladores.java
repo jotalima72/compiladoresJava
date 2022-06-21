@@ -59,6 +59,9 @@ public class Compiladores {
                             } else {
                                 Atomo s = simbolos.remove(indice - 1);
                                 s.setLinhas(countLinha);
+                                if(s.getTamanho() != simbolo.getTamanho()){
+                                    s.setTamanho(simbolo.getTamanho());
+                                }
                                 simbolos.add(indice - 1, s);
                             }
                         }
@@ -107,7 +110,7 @@ public class Compiladores {
                     break;
                 case "FLOAT":
                     int tam = 35;
-                    if (auxId.indexOf(".") == 35) {
+                    if (id.indexOf(".") == 34) {
                         tam = 34;
                     }
                     for (int i = 0; i < tam; i++) {
