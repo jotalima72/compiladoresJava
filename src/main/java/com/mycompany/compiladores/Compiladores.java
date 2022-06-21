@@ -2,6 +2,7 @@ package com.mycompany.compiladores;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,7 +39,8 @@ public class Compiladores {
         System.out.println("Nome do arquivo: ");
         Scanner console = new Scanner(System.in);
         path = console.nextLine();
-        try ( BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"))) {
+        try {
+            BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"));
             String linha;
             identificador = "";
             char letra;
@@ -60,19 +62,23 @@ public class Compiladores {
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
-                    System.out.println(indice + "\t" + lex.toString()+"\n");
+                    System.out.println(indice + "\t" + lex.toString() + "\n");
                 } else {
-                    System.out.println("-\t" + lex.toString()+"\n");
+                    System.out.println("-\t" + lex.toString() + "\n");
                 }
             });
 
             simbolos.forEach(simba -> {
                 System.out.println(simba.toString());
                 System.out.println("=======================");
+
             });
+            arquivo_lexico(path);
+            arquivo_tab(path);
+        } catch (FileNotFoundException x) {
+            System.out.println("Arquivo não encontrado");
         }
-        arquivo_lexico(path);
-        arquivo_tab(path);
+
     }
 
     public static Atomo truncador(Lexeme lexeme) {
@@ -100,8 +106,10 @@ public class Compiladores {
                     break;
                 case "PFO":
                     int tam = 35;
-                    if (id.indexOf(".") == 34) {
+                    if (id.indexOf(".") == 34 || id.indexOf("E") == 34) {
                         tam = 34;
+                    } else if (id.indexOf("+") == 34 || id.indexOf("-") == 34) {
+                        tam = 33;
                     }
                     for (int i = 0; i < tam; i++) {
                         auxId += id.charAt(i);
@@ -175,66 +183,66 @@ public class Compiladores {
     }
 
     public static void arquivo_lexico(String path) throws IOException {
-        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".LEX"))) {
-            String cabecalho = "*************************************************************\n"+
-                               "*\t EQUIPE 03                                    \n"+
-                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
-                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
-                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
-                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
-                               "*************************************************************\n"+
-                               "\n\n"+
-                               "=============================================================\n"+
-                               "INDICE\tCODIGO\t\tLEXEME\n"+
-                               "=============================================================\n";
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".LEX"))) {
+            String cabecalho = "*************************************************************\n"
+                    + "*\t EQUIPE 03                                    \n"
+                    + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
+                    + "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"
+                    + "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"
+                    + "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"
+                    + "*************************************************************\n"
+                    + "\n\n"
+                    + "=============================================================\n"
+                    + "INDICE\tCODIGO\t\tLEXEME\n"
+                    + "=============================================================\n";
             buffWriter.append(cabecalho);
             lexemes.forEach(lex -> {
                 int indice = indice(lex);
                 if (indice > 0) {
                     try {
-                        buffWriter.append(indice + "\t" + lex.toString()+"\n");
+                        buffWriter.append(indice + "\t" + lex.toString() + "\n");
                     } catch (IOException ex) {
                         Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
                     try {
-                        buffWriter.append("-\t" + lex.toString()+"\n");
+                        buffWriter.append("-\t" + lex.toString() + "\n");
                     } catch (IOException ex) {
                         Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
             buffWriter.append("=============================================================\n");
-            
+
             buffWriter.close();
         }
     }
-    
+
     public static void arquivo_tab(String path) throws IOException {
-        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path+".TAB"))) {
-            String cabecalho = "*************************************************************\n"+
-                               "*\t EQUIPE 03                                    \n"+
-                               "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"+
-                               "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"+
-                               "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"+
-                               "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"+
-                               "*************************************************************\n"+
-                               "\n\n"+
-                               "============================================================================\n"+
-                               "INDICE\tCODIGO\tTIPO\tTAM\tTRUNC\tLINHAS\t\tLEXEME\n"+
-                               "============================================================================\n";
+        try ( BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path + ".TAB"))) {
+            String cabecalho = "*************************************************************\n"
+                    + "*\t EQUIPE 03                                    \n"
+                    + "*\tAluno Daniel Barbosa Bastos - (75) 99808-5390 \n"
+                    + "*\tEmail daniel.b@aln.senaicimatec.edu.br        \n"
+                    + "*\tAluno Joao Pedro de Lima O. - (74) 99963-3047 \n"
+                    + "*\tEmail joao.o@aln.senaicimatec.edu.br          \n"
+                    + "*************************************************************\n"
+                    + "\n\n"
+                    + "============================================================================\n"
+                    + "INDICE\tCODIGO\tTIPO\tTAM\tTRUNC\tLINHAS\t\tLEXEME\n"
+                    + "============================================================================\n";
             buffWriter.append(cabecalho);
             simbolos.forEach(simbolo -> {
                 Lexeme lex = new Lexeme(simbolo.getCodigo(), simbolo.getIdentificador());
                 int indice = indice(lex);
-                    try {
-                        buffWriter.append(indice + "\t" + simbolo.toString()+"\n");
-                    } catch (IOException ex) {
-                        Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                try {
+                    buffWriter.append(indice + "\t" + simbolo.toString() + "\n");
+                } catch (IOException ex) {
+                    Logger.getLogger(Compiladores.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
             buffWriter.append("============================================================================\n");
-            
+
             buffWriter.close();
         }
     }
@@ -245,6 +253,19 @@ public class Compiladores {
         lex.setCodigo(simbolo.getCodigo());
         lex.setIdentificador(simbolo.getIdentificador());
         lexemes.add(lex);
+        if (lex.getIdentificador().contentEquals("(")) {
+            int pos = lexemes.size() - 2;
+            Lexeme maybeFunc = lexemes.get(pos);
+            if (maybeFunc.getCodigo().contentEquals("ID01") && !maybeFunc.getIdentificador().contains("_")) {
+                maybeFunc = lexemes.remove(pos);
+                maybeFunc.setCodigo("ID04");
+                lexemes.add(pos, maybeFunc);
+                pos = indice(maybeFunc) - 1;
+                Atomo sim = simbolos.remove(pos);
+                sim.setCodigo(maybeFunc.getCodigo());
+                simbolos.add(pos, sim);
+            }
+        }
         if (lex.getCodigo().contains("ID")) {
             int indice = indice(lex);
             if (indice < 0) {
@@ -297,10 +318,8 @@ public class Compiladores {
                 aux = "CHARACTER";
             } else if (identificador.charAt(0) == '\"') {
                 aux = "CONSTANT-STRING";
-            } else if (identificador.contains("_")) {
-                aux = "IDENTIFIER";
             } else {
-                aux = "FUNCTION";
+                aux = "IDENTIFIER";
             }
             for (Lexeme reservado : reservados) {
                 if (reservado.getIdentificador().contentEquals(aux)) {
@@ -381,11 +400,10 @@ public class Compiladores {
                 }
             }
         } else if (((letra == '\'' && !(identificador.length() > 0)) && !isComentario && !isAspasDuplas) || isAspasSimples) {
-            boolean temChar = false;
+            boolean temChar = false, tem2char = false;
             if (!isAspasSimples) {
                 identificador += letra;
                 isAspasSimples = true;
-                linhaInicial = countLinha;
             }
             if (identificador.length() > 1) {
                 temChar = true;
@@ -400,21 +418,32 @@ public class Compiladores {
                 if (Character.isAlphabetic(letra) && !temChar) {
                     identificador += letra;
                     temChar = true;
-                } else if (letra == '\'') {
-                    identificador += letra;
+                } else if (letra == '\'' && temChar) {
                     isAspasSimples = false;
-                    return true;
+                    if (!tem2char) {
+                        identificador += letra;
+                        return true;
+                    }
+                    else{
+                        
+                        identificador = "";
+                        return false;
+                    }
+                } else {
+                    if(aceita_punct(letra) || Character.isLetterOrDigit(letra) || Character.isSpace(letra))
+                        tem2char = true;
                 }
             }
         } else if ((letra == '\"' && !(identificador.length() > 0) && !isComentario && !isAspasSimples) || isAspasDuplas) {
             if (!isAspasDuplas) {
                 identificador += letra;
-                isAspasDuplas = true;
                 linhaInicial = countLinha;
             }
             while (index < linha.length()) {
                 index++;
                 if (!(index < linha.length())) {
+                    isAspasDuplas = true;
+                    linhaInicial = 0;
                     break;
                 }
                 letra = linha.charAt(index);
@@ -423,7 +452,11 @@ public class Compiladores {
                     identificador += letra;
                 } else if (letra == '\"') {
                     identificador += letra;
-                    isAspasDuplas = false;
+                    if (isAspasDuplas) {
+                        isAspasDuplas = false;
+                        identificador = "";
+                        return false;
+                    }
                     return true;
                 }
             }
