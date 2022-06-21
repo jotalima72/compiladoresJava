@@ -29,43 +29,24 @@ public class Compiladores {
 //            System.out.println(lex.toString());
 //        });
         System.out.println("Nome do arquivo: ");
-        //Scanner console = new Scanner(System.in);
-        path = "macaco";//console.nextLine();
+        Scanner console = new Scanner(System.in);
+        path = console.nextLine();
         try ( BufferedReader buffRead = new BufferedReader(new FileReader(path + ".DKS"))) {
             String linha;
             identificador = "";
             char letra;
             while ((linha = buffRead.readLine()) != null) {
-                //System.out.println(line);
 
                 for (index = 0; index < linha.length(); index++) {
                     letra = linha.charAt(index);
                     letra = Character.toUpperCase(letra);
                     boolean criaId = lerAtomo(letra, linha);
                     if (criaId) {
-                        Lexeme lex = cria_identificador();
-                        Atomo simbolo = truncador(lex);
-                        lex.setCodigo(simbolo.getCodigo());
-                        lex.setIdentificador(simbolo.getIdentificador());
-                        lexemes.add(lex);
-                        if (lex.getCodigo().contains("ID")) {
-                            int indice = indice(lex);
-                            if (indice < 0) {
-                                int tamanho = simbolo.getTamanho();
-                                int tamTrunc = simbolo.getTamTrucado();
-                                String tipo = simbolo.getTipo();
-                                simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamTrunc, tipo, countLinha);
-                                simbolos.add(simbolo);
-                            } else {
-                                Atomo s = simbolos.remove(indice - 1);
-                                s.setLinhas(countLinha);
-                                if(s.getTamanho() != simbolo.getTamanho()){
-                                    s.setTamanho(simbolo.getTamanho());
-                                }
-                                simbolos.add(indice - 1, s);
-                            }
-                        }
+                        preenche_listas();
                     }
+                }
+                if (identificador.length() > 0) {
+                    preenche_listas();
                 }
                 countLinha++;
             }
@@ -179,6 +160,31 @@ public class Compiladores {
                     break;
                 }
 
+            }
+        }
+    }
+
+    public static void preenche_listas() {
+        Lexeme lex = cria_identificador();
+        Atomo simbolo = truncador(lex);
+        lex.setCodigo(simbolo.getCodigo());
+        lex.setIdentificador(simbolo.getIdentificador());
+        lexemes.add(lex);
+        if (lex.getCodigo().contains("ID")) {
+            int indice = indice(lex);
+            if (indice < 0) {
+                int tamanho = simbolo.getTamanho();
+                int tamTrunc = simbolo.getTamTrucado();
+                String tipo = simbolo.getTipo();
+                simbolo = new Atomo(lex.getCodigo(), lex.getIdentificador(), tamanho, tamTrunc, tipo, countLinha);
+                simbolos.add(simbolo);
+            } else {
+                Atomo s = simbolos.remove(indice - 1);
+                s.setLinhas(countLinha);
+                if (s.getTamanho() != simbolo.getTamanho()) {
+                    s.setTamanho(simbolo.getTamanho());
+                }
+                simbolos.add(indice - 1, s);
             }
         }
     }
